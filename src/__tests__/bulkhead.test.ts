@@ -10,7 +10,7 @@ describe('bulkhead (non-keyed) behavior and monitoring', () => {
   });
 
   it('acquires, queues, dequeues and releases slots', async () => {
-    const events: any[] = [];
+    const events: { type: string }[] = [];
     const bh = new Bulkhead(1, 10, (e) => events.push(e));
 
     const p1 = bh.exec(async () => {
@@ -47,8 +47,12 @@ describe('bulkhead keyed pools and idle cleanup', () => {
   });
 
   it('creates per-key pools and cleans up idle keys', async () => {
-    const events: any[] = [];
-    const bh = new Bulkhead(1, 10, (e) => events.push(e), { keyed: true, idleTimeoutMs: 1000, maxKeys: 10 });
+    const events: { type: string }[] = [];
+    const bh = new Bulkhead(1, 10, (e) => events.push(e), {
+      keyed: true,
+      idleTimeoutMs: 1000,
+      maxKeys: 10,
+    });
 
     const p1 = bh.exec('k1', async () => {
       await new Promise((res) => setTimeout(res, 50));
@@ -83,10 +87,14 @@ describe('automatic key extraction with bulkheadKey', () => {
   });
 
   it('uses bulkheadKey to generate keys when exec is called without explicit key', async () => {
-    const events: any[] = [];
+    const events: { type: string; payload?: Record<string, unknown> }[] = [];
     const keys = ['auto1', 'auto2'];
     const keyFn = () => keys.shift()!;
-    const bh = new Bulkhead(1, 10, (e) => events.push(e), { keyed: true, keyFn, idleTimeoutMs: 1000 });
+    const bh = new Bulkhead(1, 10, (e) => events.push(e), {
+      keyed: true,
+      keyFn,
+      idleTimeoutMs: 1000,
+    });
 
     const p1 = bh.exec(async () => {
       await new Promise((res) => setTimeout(res, 10));
@@ -106,7 +114,7 @@ describe('automatic key extraction with bulkheadKey', () => {
     await expect(p1).resolves.toBe('a');
     await expect(p2).resolves.toBe('b');
 
-    const keyEvents = events.filter((e) => e.type === 'bulkhead.acquire').map((e) => e.payload.key);
+    const keyEvents = events.filter((e) => e.type === 'bulkhead.acquire').map((e) => e.payload?.key);
     expect(keyEvents).toContain('auto1');
     expect(keyEvents).toContain('auto2');
   });
