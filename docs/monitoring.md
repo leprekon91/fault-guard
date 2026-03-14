@@ -9,6 +9,11 @@ Where to provide it:
 - pass `monitor` at the top-level `wrap(..., { monitor })` to receive events from retry, rate limiter, and circuit breaker.
 - or provide `monitor` directly in `retry`, `circuit`, or `rateLimit` options to scope events.
 
+Notes on precedence and async behavior:
+
+- Mechanism-specific `monitor` (for example `rateLimit.monitor` or `retry.monitor`) takes precedence over the top-level `monitor` passed to `wrap`.
+- Some mechanisms throw synchronously for certain conditions (for example `CircuitBreaker` throws `Error('Circuit is open')` when open). `retry` intentionally defers invocation of the user `fn()` to a macrotask to avoid synchronous rejection races; mechanism authors should follow that pattern when appropriate or document synchronous behavior.
+
 Example:
 
 ```ts

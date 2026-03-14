@@ -19,6 +19,10 @@ Events (monitor):
 - `circuit.half_open` — transition to `HALF_OPEN`.
 - `circuit.reject` — a call rejected while `OPEN`.
 
+Notes on synchronous behavior:
+
+- When the circuit is `OPEN`, `exec()` rejects immediately with `Error('Circuit is open')`. Callers should expect this immediate rejection; wrapper authors may choose to defer this behavior if they require macrotask-ordering consistency with `retry`.
+
 Usage example:
 
 ```ts
