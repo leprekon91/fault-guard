@@ -59,7 +59,7 @@ class Pool {
     if (this.queue.length < this.queueLimit) {
       return new Promise<T>((resolve, reject) => {
         this.queue.push(() => {
-          // when dequeued, execute the function (this will acquire current)
+          // Re-enter exec; current is below limit at this point so the slot is acquired immediately.
           this.exec(fn).then(resolve).catch(reject);
         });
         this.touch();
@@ -128,7 +128,7 @@ export class Bulkhead {
   private ensurePoolForKey(key?: PoolKey): Pool {
     if (!this.opts?.keyed) return this.globalPool;
 
-    if (key == null && this.opts?.keyFn) {
+    if (key == null && this.opts.keyFn) {
       try {
         key = this.opts.keyFn();
       } catch (err) {
@@ -162,7 +162,7 @@ export class Bulkhead {
 
     const pool = new Pool(this.limit, this.queueLimit, this.monitor, key);
     this.pools.set(key, pool);
-    if (this.opts?.idleTimeoutMs) this.startCleanup();
+    if (this.opts.idleTimeoutMs) this.startCleanup();
     return pool;
   }
 

@@ -58,6 +58,8 @@ export class CircuitBreaker {
   private onFailure() {
     if (this.state === 'HALF_OPEN') {
       // Any failure during probing re-opens the circuit immediately.
+      // failures is always 1 here — HALF_OPEN trips on the very first failure, so there is no
+      // accumulated counter to report.
       this.monitor?.({ type: 'circuit.failure', payload: { failures: 1 } });
       this.trip();
       return;

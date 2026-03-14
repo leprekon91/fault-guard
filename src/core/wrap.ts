@@ -7,9 +7,10 @@ import { BulkheadLike, BulkheadOptions, Monitor, RateLimiterLike, RateLimitOptio
 export async function wrap<T>(fn: () => Promise<T>, opts: WrapOptions = {}): Promise<T> {
   let step: () => Promise<T> = fn;
 
-  // Each block captures `prev = step` and sets `step = () => mechanism.exec(prev)`.
-  // The ordering here determines execution order (innermost → outermost):
-  //   circuit breaker → retry → bulkhead → rate limiter
+  // Each block captures `prev = step` and wraps it: `step = () => mechanism.exec(prev)`.
+  // Mechanisms are added innermost-first; the last one added becomes the outermost and
+  // executes first at call time:
+  //   fn (innermost) ← circuit breaker ← retry ← bulkhead ← rate limiter (outermost, runs first)
 
   // 1. Circuit breaker: guards the raw call — innermost so retries see accurate failure counts.
   if (opts.circuit) {

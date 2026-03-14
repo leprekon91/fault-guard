@@ -27,7 +27,8 @@ export class RateLimiter {
       // Credit all fully elapsed intervals so a long idle period catches up.
       const intervals = Math.floor(elapsed / this.reservoirRefreshIntervalMs);
       const added = this.reservoirRefreshAmount * intervals;
-      let next = (this.reservoir ?? 0) + added;
+      // `refillIfNeeded` returns early when `reservoir` is null, so the non-null assertion is safe.
+      let next = this.reservoir! + added;
 
       if (this.reservoirMax !== undefined) {
         next = Math.min(next, this.reservoirMax);
