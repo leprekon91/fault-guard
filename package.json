@@ -1,5 +1,5 @@
 {
-  "name": "circuit",
+  "name": "@leprekon-hub/fault-guard",
   "version": "0.1.0",
   "description": "A resilience layer for HTTP clients that adds retries, backoff, rate-limit handling, and circuit breakers.",
   "main": "dist/index.cjs",
@@ -15,7 +15,8 @@
     "lint": "eslint --ext .ts src",
     "format": "prettier --write \"src/**/*.ts\" README.md",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run build"
+    "prepublishOnly": "npm test && npm run build",
+    "release": "standard-version"
   },
   "keywords": [
     "resilience",
@@ -42,12 +43,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leprekon91/circuit.git"
+    "url": "git+https://github.com/leprekon91/fault-guard.git"
   },
   "bugs": {
-    "url": "https://github.com/leprekon91/circuit/issues"
+    "url": "https://github.com/leprekon91/fault-guard/issues"
   },
-  "homepage": "https://github.com/leprekon91/circuit#readme",
+  "homepage": "https://github.com/leprekon91/fault-guard#readme",
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
@@ -56,6 +57,7 @@
     "prettier": "^2.0.0",
     "tsup": "^6.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "standard-version": "^9.5.0"
   }
 }
