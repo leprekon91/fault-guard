@@ -26,9 +26,20 @@ export interface RateLimitOptions {
   monitor?: Monitor;
 }
 
+export interface BulkheadOptions {
+  limit?: number;
+  queueLimit?: number;
+  monitor?: Monitor;
+  keyed?: boolean;
+  idleTimeoutMs?: number;
+  maxKeys?: number;
+  bulkheadKey?: () => string;
+}
+
 export interface WrapOptions {
   retry?: RetryOptions;
   circuit?: CircuitOptions;
   rateLimit?: RateLimitOptions;
+  bulkhead?: BulkheadOptions;
   monitor?: Monitor;
 }

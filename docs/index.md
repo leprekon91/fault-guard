@@ -7,5 +7,6 @@ Comprehensive documentation for fault-guard's mechanisms.
 - [Rate Limiter](rateLimiter.md)
 - [Monitoring & Hooks](monitoring.md)
 - [Adapters (Axios)](adapters.md)
+- [Bulkhead](bulkhead.md)
 
 For quick usage, see the project's README.

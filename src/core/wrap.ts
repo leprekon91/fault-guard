@@ -1,6 +1,7 @@
 import { retry } from './retry';
 import { CircuitBreaker } from './circuitBreaker';
 import { RateLimiter } from './rateLimiter';
+import { Bulkhead } from './bulkhead';
 import { WrapOptions } from '../types';
 
 export async function wrap<T>(fn: () => Promise<T>, opts: WrapOptions = {}): Promise<T> {
@@ -37,10 +38,23 @@ export async function wrap<T>(fn: () => Promise<T>, opts: WrapOptions = {}): Pro
       return target();
     };
 
-    if (limiter) {
-      return limiter.schedule(inner);
+    const runWithLimiter = () => {
+      if (limiter) return limiter.schedule(inner);
+      return inner();
+    };
+
+    if (opts.bulkhead) {
+      const b = opts.bulkhead;
+      const bulk = new Bulkhead(
+        b.limit ?? 10,
+        b.queueLimit ?? Infinity,
+        b.monitor ?? opts.monitor,
+        { keyed: b.keyed, idleTimeoutMs: b.idleTimeoutMs, maxKeys: b.maxKeys, keyFn: b.bulkheadKey },
+      );
+      return bulk.exec(() => runWithLimiter());
     }
-    return inner();
+
+    return runWithLimiter();
   };
 
   return exec();
