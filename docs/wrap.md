@@ -6,11 +6,11 @@
 import { wrap } from '@leprekon-hub/fault-guard';
 
 const result = await wrap(() => fetch('/api'), {
-  retry:     { retries: 3, minDelayMs: 100 },
-  circuit:   { failureThreshold: 5, timeoutMs: 30_000 },
-  bulkhead:  { limit: 10 },
+  retry: { retries: 3, minDelayMs: 100 },
+  circuit: { failureThreshold: 5, timeoutMs: 30_000 },
+  bulkhead: { limit: 10 },
   rateLimit: { maxConcurrent: 5 },
-  monitor:   (e) => console.log(e.type),
+  monitor: (e) => console.log(e.type),
 });
 ```
 
@@ -50,11 +50,11 @@ To enforce a shared limit across multiple concurrent `wrap()` calls, pass a **pr
 import { wrap, RateLimiter, Bulkhead } from '@leprekon-hub/fault-guard';
 
 const limiter = new RateLimiter(5);
-const bh      = new Bulkhead(10);
+const bh = new Bulkhead(10);
 
-await Promise.all(requests.map(req =>
-  wrap(() => fetch(req), { rateLimit: limiter, bulkhead: bh })
-));
+await Promise.all(
+  requests.map((req) => wrap(() => fetch(req), { rateLimit: limiter, bulkhead: bh })),
+);
 ```
 
 ### Lifecycle of shared instances
@@ -64,12 +64,12 @@ await Promise.all(requests.map(req =>
 
 ## `WrapOptions` reference
 
-| Option | Type | Description |
-|---|---|---|
-| `retry` | `RetryOptions` | Retry with exponential backoff. See [retry.md](retry.md). |
-| `circuit` | `CircuitOptions` | Circuit breaker state machine. See [circuitBreaker.md](circuitBreaker.md). |
-| `bulkhead` | `BulkheadOptions \| Bulkhead` | Per-pool concurrency isolation. See [bulkhead.md](bulkhead.md). |
+| Option      | Type                              | Description                                                                    |
+| ----------- | --------------------------------- | ------------------------------------------------------------------------------ |
+| `retry`     | `RetryOptions`                    | Retry with exponential backoff. See [retry.md](retry.md).                      |
+| `circuit`   | `CircuitOptions`                  | Circuit breaker state machine. See [circuitBreaker.md](circuitBreaker.md).     |
+| `bulkhead`  | `BulkheadOptions \| Bulkhead`     | Per-pool concurrency isolation. See [bulkhead.md](bulkhead.md).                |
 | `rateLimit` | `RateLimitOptions \| RateLimiter` | Concurrent slot + optional token bucket. See [rateLimiter.md](rateLimiter.md). |
-| `monitor` | `Monitor` | Receives events from all mechanisms. See [monitoring.md](monitoring.md). |
+| `monitor`   | `Monitor`                         | Receives events from all mechanisms. See [monitoring.md](monitoring.md).       |
 
 Omitting any option disables that mechanism entirely — there is no overhead for unused mechanisms.
