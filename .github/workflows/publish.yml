@@ -20,14 +20,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: https://registry.npmjs.org
-          scope: '@leprekon-hub'
 
       - run: npm ci
 
       - run: npm run build --if-present
-
-      # Remove the auth token placeholder so npm uses OIDC for trusted publishing
-      - run: sed -i '/_authToken/d' "$GITHUB_WORKSPACE/.npmrc"
 
       - run: npm publish --provenance --access public
