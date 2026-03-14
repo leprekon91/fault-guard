@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
+      packages: write
       id-token: write   # REQUIRED for npm trusted publishing
 
     steps:
